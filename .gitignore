@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.PYTHON
+
+# 运行时数据 / 日志 / 数据库
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.log
+*.jsonl
+*.pid
+*.sock
+
+# 真实配置（仓库只保留 deploy/config.example.json）
+config.json
+
+# 编辑器 / 系统
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Python 虚拟环境
+.venv/
+venv/
+env/
+
+# 临时文件
+*.tmp
+*.bak

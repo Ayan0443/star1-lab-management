@@ -1,0 +1,22 @@
+{
+  "bind": "0.0.0.0",
+  "port": 8083,
+  "tls": true,
+  "tls_cert": "/etc/campus-signup/tls/server.crt",
+  "tls_key": "/etc/campus-signup/tls/server.key",
+  "db": "/var/lib/star1-gpu-board/board.db",
+  "static": "/opt/star1-gpu-board/static",
+  "campus_config": "/etc/campus-signup/config.json",
+  "sample_interval": 30,
+  "history_interval": 120,
+  "retention_days": 60,
+  "min_booking_minutes": 30,
+  "max_booking_hours": 24,
+  "max_booking_days_ahead": 7,
+  "max_future_bookings_per_user": 2,
+  "session_ttl": 43200,
+  "admin_session_ttl": 21600,
+  "site_title": "star1 GPU 预约台",
+  "site_subtitle": "8 × A100-80G · 实时占用、预约与使用统计",
+  "contact": "管理员甲 / 管理员乙（见校园网门户公告）"
+}

@@ -1,0 +1,111 @@
+{
+  "mode": "production",
+  "server": {
+    "bind": "10.0.0.10",
+    "public_host": "10.0.0.10",
+    "ports": {
+      "https": 8444,
+      "http": 8082
+    },
+    "max_concurrent_connections": 64
+  },
+  "tls": {
+    "enabled": true,
+    "cert": "/etc/campus-signup/tls/server.crt",
+    "key": "/etc/campus-signup/tls/server.key"
+  },
+  "paths": {
+    "static": "/opt/campus-signup/static",
+    "db": "/var/lib/campus-signup/registrations.db",
+    "lock": "/var/lib/campus-signup/register.lock"
+  },
+  "provisioner": {
+    "socket": "/run/campus-signup/provision.sock",
+    "timeout_seconds": 30,
+    "allowed_peer_uid": 0
+  },
+  "security": {
+    "admin_token": "",
+    "allowed_client_cidrs": [],
+    "trusted_proxies": [],
+    "allow_query_token": false,
+    "admin_allowed_cidrs": [
+      "10.0.0.0/8",
+      "127.0.0.1/32"
+    ],
+    "admin_lockout": {
+      "window_seconds": 900,
+      "max_failures": 10,
+      "lockout_seconds": 900
+    }
+  },
+  "ui": {
+    "server_name": "star1 实验室服务器",
+    "site_title": "校园网服务器账号自助申请",
+    "ssh_host": "10.0.0.10",
+    "ssh_port": 22,
+    "ssh_ipv6": "2001:db8::10",
+    "ssh_ipv6_port": 2222,
+    "contact": "管理员甲（邮箱 admin@example.com，电话/微信 13800000000）；管理员乙（微信 wechat_admin）",
+    "default_announcement": ""
+  },
+  "rate_limits": {
+    "preview": {
+      "window_seconds": 60,
+      "max_requests": 120
+    },
+    "generate_password": {
+      "window_seconds": 60,
+      "max_requests": 30
+    },
+    "register": {
+      "window_seconds": 600,
+      "max_requests": 20
+    },
+    "admin": {
+      "window_seconds": 60,
+      "max_requests": 60
+    },
+    "announcement": {
+      "window_seconds": 60,
+      "max_requests": 120
+    },
+    "email_send": {
+      "window_seconds": 3600,
+      "max_requests": 20
+    },
+    "password_reset": {
+      "window_seconds": 3600,
+      "max_requests": 20
+    },
+    "bind": {
+      "window_seconds": 3600,
+      "max_requests": 10
+    }
+  },
+  "email": {
+    "enabled": true,
+    "allowed_domains": [
+      "mails.example.edu.cn",
+      "example.edu.cn"
+    ],
+    "smtp": {
+      "host": "mails.example.edu.cn",
+      "port": 465,
+      "security": "ssl",
+      "username": "",
+      "password": "",
+      "from_name": "star1 实验室服务器",
+      "from_addr": "",
+      "tls_verify": true,
+      "timeout_seconds": 20
+    },
+    "code_secret": "",
+    "code_ttl_seconds": 600,
+    "resend_cooldown_seconds": 60,
+    "max_verify_attempts": 5,
+    "max_send_per_email_per_day": 10,
+    "subject": "【star1 实验室服务器】账号申请验证码",
+    "max_send_global_per_day": 300
+  }
+}

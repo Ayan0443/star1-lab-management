@@ -1,0 +1,41 @@
+[Unit]
+Description=star1 GPU board (read-only monitor + reservation registry, reuses campus-signup accounts)
+Documentation=file:/opt/star1-gpu-board/README.md
+After=network-online.target campus-signup-provisioner.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=signupapp
+Group=signupapp
+WorkingDirectory=/opt/star1-gpu-board
+ExecStart=/usr/bin/python3 -B /opt/star1-gpu-board/server.py --config /etc/star1-gpu-board/config.json
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=always
+RestartSec=3
+TimeoutStopSec=10
+UMask=0027
+
+# —— 资源上限：对服务器上其他人的 CPU / 内存实验零影响 ——
+Nice=19
+IOSchedulingClass=idle
+MemoryHigh=112M
+MemoryMax=128M
+CPUQuota=50%
+TasksMax=64
+
+# —— 加固：只读文件系统 + 仅写自己的数据目录 ——
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadOnlyPaths=/etc/campus-signup /opt/campus-signup
+ReadWritePaths=/var/lib/star1-gpu-board
+
+[Install]
+WantedBy=multi-user.target

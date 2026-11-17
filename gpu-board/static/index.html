@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>star1 GPU 预约台</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <h1 id="site-title">star1 GPU 预约台</h1>
+      <p class="sub" id="site-subtitle">8 × A100-80G · 实时占用、预约与使用统计</p>
+    </div>
+    <div class="account" id="account">
+      <span class="muted" id="account-note">只读监控</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="stats" aria-label="概览">
+    <div class="stat"><span class="stat-label">空闲</span><span class="stat-value" id="stat-free">–</span></div>
+    <div class="stat"><span class="stat-label">占用</span><span class="stat-value" id="stat-busy">–</span></div>
+    <div class="stat"><span class="stat-label">未登记</span><span class="stat-value" id="stat-unregistered">–</span></div>
+    <div class="stat"><span class="stat-label">预约冲突</span><span class="stat-value" id="stat-conflict">–</span></div>
+    <div class="stat"><span class="stat-label">未来 24h 预约</span><span class="stat-value" id="stat-bookings">–</span></div>
+    <div class="stat stat-right"><span class="stat-label">服务器负载</span><span class="stat-value" id="stat-load">–</span></div>
+    <div class="stat"><span class="stat-label">数据更新</span><span class="stat-value" id="stat-updated">–</span></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>GPU 实时状态</h2>
+      <span class="meta" id="update-hint">每 30 秒采集一次，页面每 10 秒刷新</span>
+    </div>
+    <div class="gpu-grid" id="gpu-grid">
+      <div class="panel muted">正在加载…</div>
+    </div>
+  </section>
+
+  <section class="section" id="booking-section">
+    <div class="section-head">
+      <h2>预约</h2>
+      <span class="meta" id="booking-rules">同一张卡同一时段只允许一个预约</span>
+    </div>
+
+    <div class="panel" id="guest-note">
+      <p class="muted">登录后可以预约显卡；未登录也可以查看实时占用与使用统计。</p>
+      <p class="hint">使用 star1 服务器账号登录（与校园网门户同一套账号）。管理员请到 <a href="/admin">管理页</a>。</p>
+      <button class="btn" id="guest-login" type="button">使用服务器账号登录</button>
+    </div>
+
+    <div class="panel" id="login-panel" hidden>
+      <form class="login-form" id="login-form">
+        <div class="field">
+          <label for="login-username">服务器用户名</label>
+          <input id="login-username" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" required>
+        </div>
+        <div class="field">
+          <label for="login-password">密码</label>
+          <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="field field-action">
+          <button class="btn" type="submit">登录</button>
+        </div>
+      </form>
+      <p class="msg" id="login-msg" hidden></p>
+    </div>
+
+    <div id="booking-body" hidden>
+      <form class="booking-form panel" id="booking-form">
+        <div class="field">
+          <label for="bk-gpu">显卡</label>
+          <select id="bk-gpu"></select>
+        </div>
+        <div class="field">
+          <label for="bk-start">开始</label>
+          <input id="bk-start" type="datetime-local" required>
+        </div>
+        <div class="field">
+          <label for="bk-end">结束</label>
+          <input id="bk-end" type="datetime-local" required>
+        </div>
+        <div class="field field-grow">
+          <label for="bk-purpose">用途</label>
+          <input id="bk-purpose" maxlength="120" placeholder="例如：训练 xxx 模型 / 跑消融实验" required>
+        </div>
+        <div class="field field-action">
+          <button class="btn" type="submit">提交预约</button>
+        </div>
+      </form>
+      <p class="msg" id="booking-msg" hidden></p>
+
+      <div class="panel" id="booking-list-panel">
+        <div class="panel-head"><h3>未来 24 小时预约</h3></div>
+        <div id="booking-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="agent-section" hidden>
+    <div class="section-head">
+      <h2>Agent 接入（MCP）</h2>
+      <span class="meta">给 Claude Code / Codex / DSH 等 agent 用：生成 token 后，agent 可以查询、预约、等卡、跑实验</span>
+    </div>
+    <div class="panel">
+      <form class="token-form" id="token-form">
+        <div class="field">
+          <label for="token-name">备注名</label>
+          <input id="token-name" maxlength="40" placeholder="例如：Claude Code / Codex" required>
+        </div>
+        <div class="field field-action">
+          <button class="btn" type="submit">生成 token</button>
+        </div>
+      </form>
+      <p class="msg" id="token-msg" hidden></p>
+
+      <div id="token-new" hidden>
+        <p class="hint">token 只显示这一次，请立即复制保存；丢失可撤销后重新生成。</p>
+        <div class="token-value">
+          <code id="token-value"></code>
+          <button class="btn btn-ghost btn-small" id="token-copy" type="button">复制</button>
+        </div>
+        <div class="snippets">
+          <h3>Claude Code</h3>
+          <pre id="snippet-claude"></pre>
+          <h3>Codex（~/.codex/config.toml）</h3>
+          <pre id="snippet-codex"></pre>
+          <h3>DSH（仅配置的 MCP bundle）</h3>
+          <pre id="snippet-dsh"></pre>
+        </div>
+      </div>
+
+      <div id="token-list"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>使用统计</h2>
+      <span class="meta">近 7 天 · 按 GPU 进程采样折算卡时</span>
+    </div>
+    <div class="panel" id="usage">
+      <p class="muted">正在加载…</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>使用公约</h2>
+      <span class="meta" id="rules-meta"></span>
+    </div>
+    <div class="panel rules">
+      <ol>
+        <li><strong>先登记后占用</strong>：使用整卡前请在下方预约；共享小任务请用 CUDA_VISIBLE_DEVICES 指定卡并限制显存。</li>
+        <li><strong>限时</strong>：单次预约不超过 24 小时；长任务按 checkpoint 分段，并提前预约所需时段。</li>
+        <li><strong>对号入座</strong>：按预约的卡号运行任务；临时调整请先取消或修改预约。</li>
+        <li><strong>禁止</strong>：kill 他人进程、未经沟通强占多卡、预约后长时间不跑（连续 30 分钟利用率 &lt; 5% 视为空闲）。</li>
+        <li><strong>共享</strong>：一张 80G 卡可同时跑多个小实验，请自行限制显存；大任务优先整卡。</li>
+        <li><strong>优先级</strong>：论文 deadline / 全组共享任务可联系管理员协调，普通实验按预约顺序。</li>
+        <li><strong>争议</strong>：以预约记录为准；无法解决时联系管理员。</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p>只读监控 + 预约登记：不会杀进程、不改 cgroup、不影响服务器上其他 CPU / 内存任务。数据每 30 秒从 nvidia-smi 采集。</p>
+    <p>校内直接访问 <code>https://10.0.0.10:8083/</code>；校外可先端口转发：
+      <code>ssh -L 8083:127.0.0.1:8083 你的用户名@10.0.0.10</code>，再打开 <code>https://127.0.0.1:8083/</code>。</p>
+    <p>账号由校园网门户统一管理 · 管理员入口 <a href="/admin">/admin</a> · 问题请联系 <span id="contact">管理员</span></p>
+  </div>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

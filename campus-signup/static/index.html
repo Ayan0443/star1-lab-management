@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="校园网服务器账号自助申请：申请账号、绑定已有账号邮箱、忘记密码重置，使用学校邮箱验证。">
+  <title>校园网服务器账号自助申请</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+  <div class="page">
+    <header class="site-header">
+      <div>
+        <h1 class="site-title" data-role="site-title">校园网服务器账号自助申请</h1>
+        <p class="site-subtitle">
+          <strong data-role="server-name">实验室服务器</strong> ·
+          申请服务器账号、绑定已有账号邮箱或重置密码，均使用示例大学邮箱验证。
+        </p>
+      </div>
+    </header>
+
+    <div id="service-banner" class="banner" role="alert" aria-live="assertive"></div>
+
+    <noscript>
+      <p class="noscript-note">本页面需要启用 JavaScript 才能提交申请，请启用后刷新页面。</p>
+    </noscript>
+
+    <main id="main-content">
+      <div class="apply-layout">
+        <div class="form-column">
+          <nav class="entry-switch" id="entry-switch" aria-label="账号服务">
+            <button type="button" id="entry-apply" class="entry-tab is-active" aria-pressed="true" aria-controls="apply-section">申请账号</button>
+            <button type="button" id="entry-bind" class="entry-tab" aria-pressed="false" aria-controls="bind-section">绑定已有账号邮箱</button>
+            <button type="button" id="entry-reset" class="entry-tab" aria-pressed="false" aria-controls="reset-section">忘记密码</button>
+          </nav>
+
+          <section class="card form-card" id="apply-section" aria-label="申请账号" tabindex="-1">
+            <form id="apply-form" novalidate>
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="real-name">真实姓名</label>
+                  <span class="field-hint">2–10 个汉字，少数民族姓名可含「·」</span>
+                </div>
+                <input
+                  type="text"
+                  id="real-name"
+                  name="name"
+                  inputmode="text"
+                  autocomplete="name"
+                  autocapitalize="off"
+                  autocorrect="off"
+                  spellcheck="false"
+                  maxlength="24"
+                  placeholder="例如：张三"
+                  required
+                  aria-describedby="name-preview"
+                >
+                <p class="preview" id="name-preview" data-state="idle" aria-live="polite">输入姓名后自动检查用户名</p>
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="email">学校邮箱</label>
+                  <span class="field-hint" id="email-hint">仅支持 @mails.example.edu.cn / @example.edu.cn 邮箱</span>
+                </div>
+                <div class="input-row">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    inputmode="email"
+                    autocomplete="email"
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    maxlength="254"
+                    placeholder="例如：12345678@mails.example.edu.cn"
+                    required
+                    aria-describedby="email-hint email-status"
+                  >
+                  <button type="button" id="send-code" class="btn btn-secondary btn-send" aria-controls="email-code">发送验证码</button>
+                </div>
+                <p class="preview preview--status" id="email-status" data-state="idle" aria-live="polite">验证码 10 分钟内有效，仅可使用一次。</p>
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="email-code">邮箱验证码</label>
+                  <span class="field-hint">6 位数字，仅最新验证码有效</span>
+                </div>
+                <input
+                  type="text"
+                  id="email-code"
+                  name="email_code"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  pattern="[0-9]{6}"
+                  maxlength="6"
+                  class="code-input"
+                  placeholder="请输入 6 位数字验证码"
+                  required
+                  aria-describedby="email-status"
+                >
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="password">密码</label>
+                  <span class="field-hint">至少 12 位，含大小写字母、数字和符号</span>
+                </div>
+                <div class="input-row">
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="new-password"
+                    spellcheck="false"
+                    maxlength="64"
+                    placeholder="请输入或生成强密码"
+                    required
+                    aria-describedby="password-strength-text password-warning"
+                  >
+                  <button type="button" id="toggle-password" class="btn btn-ghost" aria-pressed="false" aria-controls="password">显示</button>
+                </div>
+
+                <div class="strength" id="password-strength" data-score="0">
+                  <div class="strength-bars" id="strength-meter" role="meter" aria-label="密码强度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" aria-valuetext="请先输入密码">
+                    <span class="strength-bar"></span>
+                    <span class="strength-bar"></span>
+                    <span class="strength-bar"></span>
+                    <span class="strength-bar"></span>
+                  </div>
+                  <p class="strength-text" id="password-strength-text">强度：请先输入密码</p>
+                </div>
+
+                <ul class="pw-reqs" id="pw-reqs" aria-label="密码要求">
+                  <li class="pw-req" data-req="length">至少 12 位</li>
+                  <li class="pw-req" data-req="lower">小写字母</li>
+                  <li class="pw-req" data-req="upper">大写字母</li>
+                  <li class="pw-req" data-req="digit">数字</li>
+                  <li class="pw-req" data-req="symbol">符号</li>
+                </ul>
+
+                <p class="field-warning" id="password-warning" role="status" aria-live="polite" hidden></p>
+
+                <button type="button" id="generate-password" class="btn btn-secondary btn-generate">生成强密码</button>
+              </div>
+
+              <div id="form-error" class="alert alert-error" role="alert" aria-live="assertive"></div>
+
+              <div class="form-actions">
+                <button type="submit" id="submit-button" class="btn btn-primary btn-block">申请账号</button>
+                <p class="form-footnote">一人一邮箱、一人一 IP；账号为普通用户，无管理员权限。</p>
+              </div>
+            </form>
+          </section>
+
+          <section class="card bind-card" id="bind-section" aria-labelledby="bind-title" tabindex="-1" hidden>
+            <div class="reset-head">
+              <h2 id="bind-title">绑定已有账号邮箱</h2>
+              <p>验证当前服务器密码与学校邮箱后完成绑定；绑定后可使用「忘记密码」自助重置。</p>
+            </div>
+
+            <form id="bind-form" novalidate>
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="bind-username">用户名</label>
+                  <span class="field-hint">Linux 用户名，例如 zhangsan</span>
+                </div>
+                <input
+                  type="text"
+                  id="bind-username"
+                  name="username"
+                  autocomplete="username"
+                  autocapitalize="off"
+                  autocorrect="off"
+                  spellcheck="false"
+                  maxlength="32"
+                  placeholder="请输入服务器用户名"
+                  required
+                >
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="bind-password">当前服务器密码</label>
+                  <span class="field-hint">用于确认账号归属</span>
+                </div>
+                <div class="input-row">
+                  <input
+                    type="password"
+                    id="bind-password"
+                    name="password"
+                    autocomplete="current-password"
+                    spellcheck="false"
+                    maxlength="128"
+                    placeholder="请输入当前登录密码"
+                    required
+                  >
+                  <button type="button" id="bind-toggle-password" class="btn btn-ghost" aria-pressed="false" aria-controls="bind-password">显示</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="bind-email">学校邮箱</label>
+                  <span class="field-hint" id="bind-email-hint">仅支持 @mails.example.edu.cn / @example.edu.cn 邮箱</span>
+                </div>
+                <div class="input-row">
+                  <input
+                    type="email"
+                    id="bind-email"
+                    name="email"
+                    inputmode="email"
+                    autocomplete="email"
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    maxlength="254"
+                    placeholder="请输入要绑定的学校邮箱"
+                    required
+                    aria-describedby="bind-email-hint bind-email-status"
+                  >
+                  <button type="button" id="bind-send-code" class="btn btn-secondary btn-send" aria-controls="bind-code">发送验证码</button>
+                </div>
+                <p class="preview preview--status" id="bind-email-status" data-state="idle" aria-live="polite">验证码将发送至该邮箱，10 分钟内有效。</p>
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="bind-code">邮箱验证码</label>
+                  <span class="field-hint">6 位数字</span>
+                </div>
+                <input
+                  type="text"
+                  id="bind-code"
+                  name="code"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  pattern="[0-9]{6}"
+                  maxlength="6"
+                  class="code-input"
+                  placeholder="请输入 6 位数字验证码"
+                  required
+                  aria-describedby="bind-email-status"
+                >
+              </div>
+
+              <div id="bind-error" class="alert alert-error" role="alert" aria-live="assertive"></div>
+
+              <div class="form-actions">
+                <button type="submit" id="bind-submit-button" class="btn btn-primary btn-block">绑定邮箱</button>
+                <p class="form-footnote">绑定后可使用「忘记密码」通过该邮箱自助重置密码。</p>
+              </div>
+            </form>
+
+            <div class="reset-success" id="bind-success" role="status" aria-live="polite" tabindex="-1" hidden>
+              <p class="reset-success-title">邮箱绑定成功</p>
+              <p class="reset-success-text">账号 <strong id="bind-success-username">—</strong> 已绑定邮箱 <strong id="bind-success-email">—</strong>。</p>
+              <p class="reset-success-text">如需修改密码，可使用「忘记密码」通过该邮箱自助重置。</p>
+              <div class="reset-success-actions">
+                <button type="button" id="bind-go-reset" class="btn btn-primary">去重置密码</button>
+                <button type="button" id="bind-back-apply" class="btn btn-ghost">返回账号申请</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="card reset-card" id="reset-section" aria-labelledby="reset-title" tabindex="-1" hidden>
+            <div class="reset-head">
+              <h2 id="reset-title">重置密码</h2>
+              <p>使用已绑定的示例大学邮箱验证身份，然后设置新密码。</p>
+            </div>
+
+            <form id="reset-form" novalidate>
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="reset-email">学校邮箱</label>
+                  <span class="field-hint" id="reset-email-hint">仅支持 @mails.example.edu.cn / @example.edu.cn 邮箱</span>
+                </div>
+                <div class="input-row">
+                  <input
+                    type="email"
+                    id="reset-email"
+                    name="email"
+                    inputmode="email"
+                    autocomplete="email"
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    maxlength="254"
+                    placeholder="请输入已绑定的学校邮箱"
+                    required
+                    aria-describedby="reset-email-hint reset-email-status"
+                  >
+                  <button type="button" id="reset-send-code" class="btn btn-secondary btn-send" aria-controls="reset-code">发送验证码</button>
+                </div>
+                <p class="preview preview--status" id="reset-email-status" data-state="idle" aria-live="polite">验证码将发送至该邮箱，10 分钟内有效。</p>
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="reset-code">邮箱验证码</label>
+                  <span class="field-hint">6 位数字</span>
+                </div>
+                <input
+                  type="text"
+                  id="reset-code"
+                  name="code"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  pattern="[0-9]{6}"
+                  maxlength="6"
+                  class="code-input"
+                  placeholder="请输入 6 位数字验证码"
+                  required
+                  aria-describedby="reset-email-status"
+                >
+              </div>
+
+              <div class="field">
+                <div class="field-head">
+                  <label class="field-label" for="reset-password">新密码</label>
+                  <span class="field-hint">至少 12 位，含大小写字母、数字和符号</span>
+                </div>
+                <div class="input-row">
+                  <input
+                    type="password"
+                    id="reset-password"
+                    name="new_password"
+                    autocomplete="new-password"
+                    spellcheck="false"
+                    maxlength="64"
+                    placeholder="请输入或生成强密码"
+                    required
+                    aria-describedby="reset-strength-text reset-password-warning"
+                  >
+                  <button type="button" id="reset-toggle-password" class="btn btn-ghost" aria-pressed="false" aria-controls="reset-password">显示</button>
+                </div>
+
+                <div class="strength" id="reset-password-strength" data-score="0">
+                  <div class="strength-bars" id="reset-strength-meter" role="meter" aria-label="新密码强度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" aria-valuetext="请先输入密码">
+                    <span class="strength-bar"></span>
+                    <span class="strength-bar"></span>
+                    <span class="strength-bar"></span>
+                    <span class="strength-bar"></span>
+                  </div>
+                  <p class="strength-text" id="reset-strength-text">强度：请先输入密码</p>
+                </div>
+
+                <ul class="pw-reqs" id="reset-pw-reqs" aria-label="新密码要求">
+                  <li class="pw-req" data-req="length">至少 12 位</li>
+                  <li class="pw-req" data-req="lower">小写字母</li>
+                  <li class="pw-req" data-req="upper">大写字母</li>
+                  <li class="pw-req" data-req="digit">数字</li>
+                  <li class="pw-req" data-req="symbol">符号</li>
+                </ul>
+
+                <p class="field-warning" id="reset-password-warning" role="status" aria-live="polite" hidden></p>
+
+                <button type="button" id="reset-generate-password" class="btn btn-secondary btn-generate">生成强密码</button>
+              </div>
+
+              <div id="reset-error" class="alert alert-error" role="alert" aria-live="assertive"></div>
+
+              <div class="form-actions">
+                <button type="submit" id="reset-submit-button" class="btn btn-primary btn-block">重置密码</button>
+                <p class="form-alt-action">
+                  <button type="button" id="back-to-apply" class="text-link">返回账号申请</button>
+                </p>
+              </div>
+            </form>
+
+            <div class="reset-success" id="reset-success" role="status" aria-live="polite" tabindex="-1" hidden>
+              <p class="reset-success-title">密码已重置</p>
+              <p class="reset-success-text">账号 <strong id="reset-success-username">—</strong> 的密码已更新，请使用新密码登录。</p>
+              <p class="reset-locked-note" id="reset-locked-note" hidden>账号当前被锁定，需联系管理员解锁后才能登录。</p>
+              <button type="button" id="reset-back-button" class="btn btn-primary">返回账号申请</button>
+            </div>
+          </section>
+
+          <section class="card result-card" id="result-card" aria-labelledby="result-title" tabindex="-1" hidden>
+            <div class="result-head">
+              <h2 class="result-title" id="result-title">账号已创建</h2>
+              <p class="result-subtitle" id="result-subtitle">你的服务器账号已创建。</p>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-item result-item--wide">
+                <span class="result-label">用户名</span>
+                <p class="result-value result-username" id="result-username">—</p>
+              </div>
+
+              <div class="result-item result-item--wide">
+                <span class="result-label">密码（明文仅显示这一次）</span>
+                <div class="result-value-row">
+                  <code class="result-value result-password" id="result-password">—</code>
+                  <button type="button" id="copy-password" class="btn btn-secondary btn-small">复制密码</button>
+                </div>
+              </div>
+
+              <div class="result-item result-item--wide">
+                <span class="result-label">学校邮箱</span>
+                <code class="result-value" id="result-email">—</code>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">家目录</span>
+                <code class="result-value" id="result-home">—</code>
+              </div>
+
+              <div class="result-item">
+                <span class="result-label">工作目录</span>
+                <code class="result-value" id="result-workspace">—</code>
+              </div>
+
+              <div class="result-item result-item--wide">
+                <span class="result-label">校内登录（IPv4）</span>
+                <div class="result-value-row">
+                  <code class="result-value" id="result-ssh">—</code>
+                  <button type="button" id="copy-ssh" class="btn btn-secondary btn-small">复制命令</button>
+                </div>
+              </div>
+
+              <div class="result-item result-item--wide" id="result-ipv6-item">
+                <span class="result-label">校外登录（IPv6 直连）</span>
+                <div class="result-value-row">
+                  <code class="result-value" id="result-ssh-ipv6">—</code>
+                  <button type="button" id="copy-ssh-ipv6" class="btn btn-secondary btn-small">复制命令</button>
+                </div>
+              </div>
+            </div>
+
+            <p class="result-meta" id="result-created" hidden></p>
+
+            <div class="result-actions">
+              <button type="button" id="copy-all" class="btn btn-primary">复制全部信息</button>
+            </div>
+            <p class="result-status" id="copy-status" role="status" aria-live="polite"></p>
+
+            <ul class="result-notes">
+              <li>密码明文仅显示这一次，请立即保存。</li>
+              <li>首次通过 SSH 登录后，请立即执行 <code>passwd</code> 修改密码。</li>
+              <li>家目录位于数据盘 <code>/home</code>，无需额外挂载；账号为普通用户，无管理员权限。</li>
+              <li>一个学校邮箱仅可对应一个账号，请妥善保管邮箱。</li>
+            </ul>
+          </section>
+        </div>
+
+        <aside class="card announcement-card" id="announcement-card" aria-labelledby="announcement-title">
+          <div class="announcement-head">
+            <div>
+              <h2 id="announcement-title">服务器使用说明</h2>
+              <p class="announcement-meta" id="announcement-meta">正在加载公告…</p>
+            </div>
+            <button type="button" id="announcement-toggle" class="btn btn-ghost btn-small" aria-expanded="false" aria-controls="announcement-body">展开</button>
+          </div>
+          <div class="announcement-body" id="announcement-body" tabindex="0" aria-label="服务器使用说明内容" hidden>
+            <div class="announcement-content" id="announcement-content">正在加载公告…</div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <section aria-labelledby="rules-title">
+          <h2 id="rules-title">申请与绑定规则</h2>
+          <ul>
+            <li id="footer-email-rule">仅限示例大学邮箱（@mails.example.edu.cn / @example.edu.cn），一个邮箱仅可对应一个账号。</li>
+            <li>同一校园网 IP 仅可申请一个账号。</li>
+            <li>已有账号可绑定邮箱后使用「忘记密码」自助重置。</li>
+            <li>姓名须为真实中文姓名；密码至少 12 位，含大小写字母、数字和符号。</li>
+            <li>邮箱验证码 10 分钟内有效，仅可使用一次。</li>
+            <li id="footer-login-hint">校内使用 IPv4 直连；校外请使用 IPv6 直连（默认端口 2222）。</li>
+          </ul>
+        </section>
+        <section aria-labelledby="support-title">
+          <h2 id="support-title">联系管理员</h2>
+          <p><span data-role="contact">实验室管理员</span></p>
+          <p><span data-role="server-name">实验室服务器</span></p>
+        </section>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

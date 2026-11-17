@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理 · star1 GPU 预约台</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <h1>管理员 · star1 GPU 预约台</h1>
+      <p class="sub">预约管理 / 使用统计 / 用户列表（账号来自 campus-signup）</p>
+    </div>
+    <div class="account">
+      <a href="/">返回看板</a>
+      <span class="muted">|</span>
+      <span class="muted" id="admin-status">未登录</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="section" id="admin-login-section">
+    <div class="panel admin-login">
+      <div class="panel-head"><h3>管理员登录</h3></div>
+      <form id="admin-login-form">
+        <div class="field">
+          <label for="admin-token">管理员口令</label>
+          <input id="admin-token" type="password" autocomplete="off" required>
+        </div>
+        <button class="btn" type="submit">登录</button>
+      </form>
+      <p class="hint">口令与校园网门户（campus-signup）的管理员 token 相同；仅校内网 / SSH 隧道可登录。</p>
+      <p class="msg" id="admin-login-msg" hidden></p>
+    </div>
+  </section>
+
+  <section class="section" id="admin-body" hidden>
+    <div class="section-head">
+      <h2>预约管理</h2>
+      <div class="admin-actions">
+        <button class="btn btn-ghost btn-small" id="admin-refresh" type="button">刷新</button>
+        <button class="btn btn-ghost btn-small" id="admin-logout" type="button">退出</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>代学生预约</h3></div>
+      <form class="admin-create" id="admin-create-form">
+        <div class="field">
+          <label for="admin-bk-user">用户</label>
+          <select id="admin-bk-user"></select>
+        </div>
+        <div class="field">
+          <label for="admin-bk-gpu">显卡</label>
+          <select id="admin-bk-gpu"></select>
+        </div>
+        <div class="field">
+          <label for="admin-bk-start">开始</label>
+          <input id="admin-bk-start" type="datetime-local" required>
+        </div>
+        <div class="field">
+          <label for="admin-bk-end">结束</label>
+          <input id="admin-bk-end" type="datetime-local" required>
+        </div>
+        <div class="field">
+          <label for="admin-bk-purpose">用途</label>
+          <input id="admin-bk-purpose" maxlength="120" placeholder="用途" required>
+        </div>
+        <div class="field field-action">
+          <button class="btn" type="submit">创建</button>
+        </div>
+      </form>
+      <p class="msg" id="admin-booking-msg" hidden></p>
+      <div id="admin-booking-list"></div>
+    </div>
+
+    <div class="section-head">
+      <h2>使用统计（30 天）</h2>
+      <span class="meta" id="admin-usage-meta"></span>
+    </div>
+    <div class="panel" id="admin-usage"></div>
+
+    <div class="section-head">
+      <h2>用户</h2>
+      <span class="meta">来自 campus-signup provisioner（uid ≥ 1000，最多 500 个）</span>
+    </div>
+    <div class="panel" id="admin-users"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p>管理员操作会记录到服务日志（journald），不记录任何密码。预约数据保存在 /var/lib/star1-gpu-board/board.db。</p>
+  </div>
+</footer>
+
+<script src="/static/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+[Unit]
+Description=Campus Signup Web Portal (HTTPS + admin console)
+Documentation=file:/opt/campus-signup/README.md
+After=network-online.target campus-signup-provisioner.service
+Wants=network-online.target
+Requires=campus-signup-provisioner.service
+
+[Service]
+Type=simple
+User=signupapp
+Group=signupapp
+ExecStart=/usr/bin/python3 -B /opt/campus-signup/app/server.py --config /etc/campus-signup/config.json
+WorkingDirectory=/opt/campus-signup
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=on-failure
+RestartSec=3
+UMask=0027
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/campus-signup
+ProtectHome=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

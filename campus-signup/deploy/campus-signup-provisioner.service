@@ -1,0 +1,34 @@
+[Unit]
+Description=Campus Signup Provisioner (root helper for user creation/management)
+Documentation=file:/opt/campus-signup/README.md
+After=local-fs.target systemd-tmpfiles-setup.service
+Before=campus-signup-web.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -B /opt/campus-signup/app/provisioner.py --config /etc/campus-signup/config.json
+WorkingDirectory=/opt/campus-signup
+Environment=PATH=/usr/sbin:/usr/bin:/sbin:/bin
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=on-failure
+RestartSec=3
+User=root
+Group=root
+UMask=0022
+# 适度加固；useradd/chpasswd 需要写 /etc、/home，故不能用 ProtectSystem=strict
+NoNewPrivileges=no
+PrivateTmp=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
